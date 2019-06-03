@@ -81,17 +81,16 @@ def recursive_switch(S, C, N, i):
 	rest_of_S = S[int(length(S)/3):]
 	split = length(S)/3
 	# base case is when we reach the end of the first third of S
-	if i == length(find_sub_string(first_third_S, C)):
-		return swap_strings(S, C, C_shift, i1, i2)
-	# iterate index by index and call the recursive function
+	if i == length(find_sub_string(first_third_S, C)): # return S once we have reached the split
+		return swap_strings(S, C, C_shift, i1, i2) 
 	else:
 		i += 1
 		if (find_sub_string(first_third_S, C)[i] + length(C) < length(first_third_S)):
-			if find_sub_string(first_third_S, C):
-				i1 = find_sub_string(first_third_S, C)[i]
+			if find_sub_string(first_third_S, C) != 1:
+				i1 = find_sub_string(first_third_S, C)[i] # use current index to generate swap if the strings are equal
 				if find_sub_string(rest_of_S, C_shift) != -1:
-					i2 = (find_sub_string(rest_of_S, C_shift)[i] + length(first_third_S))
-		return recursive_switch(S, C, N, i)
+					i2 = (find_sub_string(rest_of_S, C_shift)[i] + length(first_third_S)) # if strings are equal grab index to feed into base case
+		return recursive_switch(S, C, N, i) # iterate index by index and call the recursive function to see if C and C_shift occur
 
 
 print(recursive_switch('abcxxabcxxxxxxxxxxxxxxxbcdxxbcd','abc',1, 0))
