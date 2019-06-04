@@ -1,6 +1,10 @@
 # Scott Calnan
 # 6/3/19
 # Part B
+# This console program takes in a string S that is all English alphabet letters and whose length is divisible by three, a string C
+# that is all English alphabet letters, and an integer N from the user.  The letters in C are then shifted by N.  Instances of 
+# of C in the first third of S are then swapped by instances of C_shift in the remaing two thirds of S.  This is done by finding the indexes of 
+# C and C_shift using recursive function.  Unit code of all the functions follows the solution code.
 
 alph = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 num = ['0','1','2','3','4','5','6','7','8','9']
@@ -42,24 +46,24 @@ def shift(C,N):
 # takes in two strings and an integer (index) then determines if string one exists in string two, if not equal retruns -1 otherwise it returns the index
 def strings_equal(sub_string, string, start):
 	for i in range(length(sub_string)):
-		# print("it is: " + str(i + start))
 		if length(string) > (i+start):
 			if sub_string[i] != string[i+start]:
 				return -1
 				break
 	return start
 
-# takes in two strings and returns all indices of sub_string in string
-def find_sub_string(string, sub_string):
-	indices = []
+# takes in two strings, a start value for the recursive counter, and a start value for the indices array then returns all indices of sub_string in string using recursion
+def recursive_find_sub_string(string, sub_string, i, indices):
 	first = sub_string[0]
-	for i in range(length(string)):
+	if i == (length(string)-length(sub_string))+1: # split when i is the length of substring away from the end of the string
+		return indices
+	else:
 		if string[i] == first:
-			# print("index is: "+str(i))
-			index = (strings_equal(sub_string, string, i))
+			index = (strings_equal(sub_string, string, i)) # check if sub_string is in string
 			if index != -1:
-				indices += [index]
-	return indices
+				indices += [index] # save index of the beginning of sub_string in string
+		i += 1
+		return recursive_find_sub_string(string,sub_string,i,indices)
 
 # takes in a string, two substrings, and the indeces in which the sub_strings exist in the string and swaps them 
 def swap_strings(full_str,str1,str2,i1,i2):
@@ -71,29 +75,22 @@ def swap_strings(full_str,str1,str2,i1,i2):
 		full_str[i2+i] = str1[i]
 	return make_string(full_str)
 
-
-def recursive_switch(S, C, N, i):
-	#Initialize varaibles
-	i1 = 0
-	i2 = 0
-	C_shift = shift(C,N)
-	first_third_S = S[0:int(length(S)/3)]
-	rest_of_S = S[int(length(S)/3):]
-	split = length(S)/3
-	# base case is when we reach the end of the first third of S
-	if i == length(find_sub_string(first_third_S, C)): # return S once we have reached the split
-		return swap_strings(S, C, C_shift, i1, i2) 
+# takes in two strings, C and S, and an integer then returns a modified string with swapped instances of C in the first third of S with instances of C_shift in th eremaining two thirds of S
+def switch_instance(S,C,N):
+	C_shift = shift(C,N) # create c_shift
+	first_third_S = S[0:int(length(S)/3)] # string of the first third of S
+	rest_of_S = S[int(length(S)/3):] # the remaining two thirds of S
+	i1 = recursive_find_sub_string(first_third_S,C,0,[]) # find beginning indices of instances of C in first third of S
+	i2 = recursive_find_sub_string(rest_of_S,C_shift,0,[]) # find beginning indices of instances of C_shift in remaining two thirds of S
+	# find number of swaps to make
+	if length(i1) < length(i2):
+		iterate = length(i1) # less instances of C
 	else:
-		i += 1
-		if (find_sub_string(first_third_S, C)[i] + length(C) < length(first_third_S)):
-			if find_sub_string(first_third_S, C) != 1:
-				i1 = find_sub_string(first_third_S, C)[i] # use current index to generate swap if the strings are equal
-				if find_sub_string(rest_of_S, C_shift) != -1:
-					i2 = (find_sub_string(rest_of_S, C_shift)[i] + length(first_third_S)) # if strings are equal grab index to feed into base case
-		return recursive_switch(S, C, N, i) # iterate index by index and call the recursive function to see if C and C_shift occur
-
-
-print(recursive_switch('abcxxabcxxxxxxxxxxxxxxxbcdxxbcd','abc',1, 0))
+		iterate = length(i2) # less instances of C_shift
+	# iterate through instances of C and C_shift in S
+	for i in range(iterate):
+		S = swap_strings(S, C, C_shift, i1[i], (i2[i]+length(first_third_S))) # swaps all instances of C and C_shift in S
+	return S
 
 # takes in a string and array then returns a boolean value depending on if there are characters in the string not in the array
 def match(input,check):
@@ -139,7 +136,10 @@ while state:
 		state = False
 input_N = int(input_N)
 
+print('Your new string: ' + switch_instance(input_S,input_C,input_N))
+
 ### UNIT TESTS ###
+print('UNIT TESTS:')
 
 # 1- Test length(string) function:
 # Input: (string) ==> "Scott"
@@ -181,10 +181,10 @@ if strings_equal('zing','amazing',3) == 3:
 else:
 	print("test 5 failed")
 
-# 6- Test find_sub_string(string, sub_string) function:
-# Input: (string, sub_string) ==> ('abcxabcxxbcdxxbcd','abc')
-# Output: (array) ==> [0,4]
-if find_sub_string('abcxabcxxbcdxxbcd','abc') == [0,4]:
+# 6- Test recursive_find_sub_string(string, sub_string) function:
+# Input: (string, sub_string,i,indices) ==> ('abcxabcxxbcdxxbcd','abc',0,[])
+# Output: (array) ==> [0,5]
+if recursive_find_sub_string('abcxxabc','abc',0,[]) == [0,5]:
 	print("test 6 passed")
 else:
 	print("test 6 failed")	
@@ -196,4 +196,20 @@ if swap_strings('abcxbcd','abc','bcd',0,4) == 'bcdxabc':
 	print("test 7 passed")
 else:
 	print("test 7 failed")
+
+# 8- Test switch_instances(S,C,N) function:
+# Input: (S,C,N) ==> ('abcxxabcxxxxxxxxxxxxxxbcdxxbcd','abc',1)
+# Output: (swapped occurences of C in first third of S with occurences of C_shift in remaining two thirds of S) ==> "bcdxxbcdxxxxxxxxxxxxxxabcxxabc"
+if switch_instance('abcxxabcxxxxxxxxxxxxxxbcdxxbcd','abc',1) == "bcdxxbcdxxxxxxxxxxxxxxabcxxabc":
+	print("test 8 passed")
+else:
+	print("test 8 failed")
+
+# 9- Test match(input,check) function:
+# Input: (input,check) ==> ('scott', ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'])
+# Output: (boolean) ==> True
+if match('scott', ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']) == True:
+	print("test 9 passed")
+else:
+	print("test 9 failed")
 

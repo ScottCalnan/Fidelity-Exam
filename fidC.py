@@ -3,8 +3,8 @@
 # Part C
 # This console program takes in a string S that is all English alphabet letters and whose length is divisible by three, a string C
 # that is all English alphabet letters, and an integer N from the user.  The letters in C are then shifted by N.  Instances of 
-# of C in the first third of S are then replaced by instances of C_shift in the remaing two thirds of S. The chacaters of 
-# C_shift do not have ot be preceding eachother in this instance.  Unit code of all the fnctions created is at the bottom.
+# of C in the first third of S are then swapped by instances of C_shift in the remaing two thirds of S. The chacaters of 
+# C_shift do not have ot be preceding eachother in this instance.  Unit code of all the functions follows the solution code.
 
 alph = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 num = ['0','1','2','3','4','5','6','7','8','9']
@@ -154,7 +154,8 @@ input_N = int(input_N)
 # pring the final modified string, S
 print('Your new string: ' + switch_instance(input_S,input_C,input_N))
 
-#print(switch_instance('abcxabcxabcxxxxxxxxxxxxxxxxxxxxbcdxxxbxxcxxxdxxbxxcxdxbcd','abc',1))
+### UNIT TESTS ###
+print('UNIT TESTS:')
 
 # 1- Test length(string) function:
 # Input: (string) ==> "Scott"
